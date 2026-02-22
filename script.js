@@ -76,7 +76,7 @@ mainContainer.addEventListener('click', function (event) {
         const statusBtn = parentNode.querySelector('.statusButton');
         statusBtn.innerText = "Interview";
         statusBtn.classList.remove("bg-[#eef4ff]");
-        statusBtn.classList.add("bg-green-400", "text-black");
+        statusBtn.classList.add("bg-green-500", "text-black");
 
 
         const cardInfo = {
@@ -109,7 +109,6 @@ mainContainer.addEventListener('click', function (event) {
 
 
 
-
 function renderInterview() {
 
     filterSection.innerHTML = '';
@@ -117,7 +116,7 @@ function renderInterview() {
     for (let inter of interviewList) {
         console.log(inter);
         let div = document.createElement('div');
-        div.className = 'card flex justify-between  shadow-2xl  rounded-lg p-6';
+        div.className = 'card flex justify-between  shadow-2xl  rounded-lg p-6 mb-5';
         div.innerHTML = `
             <div class="space-y-6 ">
                     <!-- part 1 -->
@@ -137,6 +136,14 @@ function renderInterview() {
                         </ul>
                     </div>
 
+
+
+                     <!-- part 3 -->
+                    <button class="statusButton bg-green-500 text-black py-2 px-3 rounded ">${inter.statusButton}</button>
+
+                    <p class="jobDescription text-[#323B49] font-normal">${inter.jobDescription}
+                    </p>
+
                     <div class="flex gap-5">
                          <button 
                             class="interview  border-2 border-green-500 text-green-500 font-semibold px-4 py-2 rounded-lg cursor-pointer   hover:bg-green-500 hover:text-white active:bg-green-600 active:text-white transition-colors duration-300">Interview</button>
@@ -154,10 +161,6 @@ function renderInterview() {
         `
         filterSection.appendChild(div)
     }
-
-
-
-
 
 
 
