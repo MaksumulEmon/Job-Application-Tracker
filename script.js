@@ -65,26 +65,34 @@ mainContainer.addEventListener('click', function (event) {
         const parentNode = event.target.parentNode.parentNode.parentNode;
         const companyName = parentNode.querySelector('.companyName').innerText
         const jobTitle = parentNode.querySelector('.jobTitle').innerText
-        const jobInfo = parentNode.querySelector('.jobInfo').innerText
+        // const jobInfo = parentNode.querySelector('.jobInfo').innerText
+        const location = parentNode.querySelector('.location').innerText
+        const type = parentNode.querySelector('.type').innerText
+        const salary = parentNode.querySelector('.salary').innerText
         const statusButton = parentNode.querySelector('.statusButton').innerText
         const jobDescription = parentNode.querySelector('.jobDescription').innerText
+
+
+        const statusBtn = parentNode.querySelector('.statusButton');
+        statusBtn.innerText = "Interview";
+        statusBtn.classList.remove("bg-[#eef4ff]");
+        statusBtn.classList.add("bg-green-400", "text-black");
 
 
         const cardInfo = {
             companyName,
             jobTitle,
-            jobInfo,
-            statusButton,
+            location,
+            type,
+            salary,
+            statusButton: 'Interview',
             jobDescription
         }
 
         const companyExist = interviewList.find(item => item.companyName == cardInfo.companyName);
 
         // Staus Button Change 
-        const statusBtn = parentNode.querySelector('.statusButton');
-        statusBtn.innerText = "Interview";
-        statusBtn.classList.remove("bg-[#eef4ff]");
-        statusBtn.classList.add("bg-green-400", "text-black");
+
 
         // Staus Button Change end
 
@@ -92,7 +100,10 @@ mainContainer.addEventListener('click', function (event) {
         if (!companyExist) {
             interviewList.push(cardInfo)
         }
+
+        calculateCount();
         renderInterview();
+
     }
 })
 
@@ -115,14 +126,16 @@ function renderInterview() {
                         <p class="jobTitle text-base font-normal text-gray-500">${inter.jobTitle}</p>
                     </div>
 
+                    
                     <!-- part 2 -->
-                    <p class="jobInfo text-gray-500 ">${inter.jobInfo}
-                        </p>
-
-                    <!-- part 3 -->
-                    <button class="statusButton bg-[#eef4ff] py-2 px-3 rounded ">Interview</button>
-
-                    <p class="jobDescription text-[#323B49] font-normal">${inter.jobDescription}</p>
+                    <!-- location,type and salary -->
+                    <div class="flex gap-2 text-[14px] text-[#64748B]">
+                        <span class="location">${inter.location}</span>
+                        <ul class="flex gap-2">
+                            <li class="type flex items-center gap-1.5"><i class="fa-solid fa-circle text-[5px]"></i>${inter.type}</li>
+                            <li class="salary flex items-center gap-1.5"><i class="fa-solid fa-circle text-[5px]"></i>${inter.salary} </li>
+                        </ul>
+                    </div>
 
                     <div class="flex gap-5">
                          <button 
