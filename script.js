@@ -54,15 +54,11 @@ function toggleStyle(id) {
         if (interviewList.length == 0) {
             filterSection.innerHTML = `
 
-      
-     
           <div class=" flex  flex-col justify-center items-center bg-[#F1F2F4] rounded-lg py-25 mb-20 mt-4">
             <img src="./images/jobs.png" alt="" class="items-center">
             <p class="text-2xl text-[#002C5C] font-semibold">No jobs available</p>
             <p class="text-[#64748B] text-center">Check back soon for new job opportunities</p>
-        </div>
-  
-
+         </div>
             `;
         } else {
             renderInterview();
@@ -111,10 +107,43 @@ mainContainer.addEventListener('click', function (event) {
 
         const companyExist = interviewList.find(item => item.companyName == cardInfo.companyName);
 
-        // Staus Button Change 
+
+        if (!companyExist) {
+            interviewList.push(cardInfo)
+        }
+
+        calculateCount();
+        renderInterview();
+
+    } else if (event.target.classList.contains('rejected')) {
+        const parentNode = event.target.parentNode.parentNode.parentNode;
+        const companyName = parentNode.querySelector('.companyName').innerText
+        const jobTitle = parentNode.querySelector('.jobTitle').innerText
+        // const jobInfo = parentNode.querySelector('.jobInfo').innerText
+        const location = parentNode.querySelector('.location').innerText
+        const type = parentNode.querySelector('.type').innerText
+        const salary = parentNode.querySelector('.salary').innerText
+        const statusButton = parentNode.querySelector('.statusButton').innerText
+        const jobDescription = parentNode.querySelector('.jobDescription').innerText
 
 
-        // Staus Button Change end
+        const statusBtn = parentNode.querySelector('.statusButton');
+        statusBtn.innerText = "Interview";
+        statusBtn.classList.remove("bg-[#eef4ff]");
+        statusBtn.classList.add("bg-green-500", "text-black");
+
+
+        const cardInfo = {
+            companyName,
+            jobTitle,
+            location,
+            type,
+            salary,
+            statusButton: 'Interview',
+            jobDescription
+        }
+
+        const companyExist = interviewList.find(item => item.companyName == cardInfo.companyName);
 
 
         if (!companyExist) {
