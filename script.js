@@ -50,6 +50,26 @@ function toggleStyle(id) {
     if (id == 'interview-filter-button') {
         allcardSection.classList.add('hidden')
         filterSection.classList.remove('hidden')
+
+        if (interviewList.length == 0) {
+            filterSection.innerHTML = `
+
+      
+     
+          <div class=" flex  flex-col justify-center items-center bg-[#F1F2F4] rounded-lg py-25 mb-20 mt-4">
+            <img src="./images/jobs.png" alt="" class="items-center">
+            <p class="text-2xl text-[#002C5C] font-semibold">No jobs available</p>
+            <p class="text-[#64748B] text-center">Check back soon for new job opportunities</p>
+        </div>
+  
+
+            `;
+        } else {
+            renderInterview();
+        }
+
+
+
     } else if (id == 'all-filter-button') {
         allcardSection.classList.remove('hidden');
         filterSection.classList.add('hidden')
