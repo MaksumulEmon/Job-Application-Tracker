@@ -1,10 +1,12 @@
 let interviewList = [];
 let rejectedList = [];
+let currentStatus = 'all'
 
 
 let total = document.getElementById('total');
 let minTotal = document.getElementById('minTotal');
 let iinterview = document.getElementById('iinterview');
+let rrejected =document.getElementById('rrejected');
 
 
 const allFilterButton = document.getElementById('all-filter-button');
@@ -42,6 +44,7 @@ function toggleStyle(id) {
 
 
     const selected = document.getElementById(id);
+    currentStatus = id
 
     // Added Biue Bg for Cursor
     selected.classList.remove('bg-white', 'text-[#323B49]');
@@ -69,6 +72,24 @@ function toggleStyle(id) {
     } else if (id == 'all-filter-button') {
         allcardSection.classList.remove('hidden');
         filterSection.classList.add('hidden')
+    } else if (id == 'rejected-filter-button') {
+        allcardSection.classList.add('hidden');    // add
+        filterSection.classList.remove('hidden');    //remove
+        renderRejected()
+
+
+        if (rejectedList.length == 0) {
+            filterSection.innerHTML = `
+
+          <div class=" flex  flex-col justify-center items-center bg-[#F1F2F4] rounded-lg py-25 mb-20 mt-4">
+            <img src="./images/jobs.png" alt="" class="items-center">
+            <p class="text-2xl text-[#002C5C] font-semibold">No jobs available</p>
+            <p class="text-[#64748B] text-center">Check back soon for new job opportunities</p>
+         </div>
+            `;
+        } else {
+            renderRejected();
+        }
     }
 }
 
@@ -79,6 +100,7 @@ mainContainer.addEventListener('click', function (event) {
 
     if (event.target.classList.contains('interview')) {
         const parentNode = event.target.parentNode.parentNode.parentNode;
+        // const parentNode = event.target.closest('card');
         const companyName = parentNode.querySelector('.companyName').innerText
         const jobTitle = parentNode.querySelector('.jobTitle').innerText
         // const jobInfo = parentNode.querySelector('.jobInfo').innerText
@@ -91,7 +113,12 @@ mainContainer.addEventListener('click', function (event) {
 
         const statusBtn = parentNode.querySelector('.statusButton');
         statusBtn.innerText = "Interview";
-        statusBtn.classList.remove("bg-[#eef4ff]");
+        statusBtn.classList.remove(
+            "bg-[#eef4ff]", "bg-red-500", "text-white", "text-black",
+
+        );
+
+        // problem
         statusBtn.classList.add("bg-green-500", "text-black");
 
 
@@ -112,11 +139,27 @@ mainContainer.addEventListener('click', function (event) {
             interviewList.push(cardInfo)
         }
 
-        calculateCount();
-        renderInterview();
+        rejectedList = rejectedList.filter(item => item.companyName != cardInfo.companyName)
 
+        // if (currentStatus == 'rejected-filter-button') {
+        //     renderRejected();
+        // }
+
+        if(currentStatus == 'interview-filter-button'){
+            renderInterview();
+        }else if(currentStatus == 'rejected-filter-button'){
+            renderRejected();
+        }
+
+
+        calculateCount();
+        // renderInterview();
+
+        // problem
     } else if (event.target.classList.contains('rejected')) {
         const parentNode = event.target.parentNode.parentNode.parentNode;
+        // const parentNode =event.target.closest('.card');
+   
         const companyName = parentNode.querySelector('.companyName').innerText
         const jobTitle = parentNode.querySelector('.jobTitle').innerText
         // const jobInfo = parentNode.querySelector('.jobInfo').innerText
@@ -127,10 +170,20 @@ mainContainer.addEventListener('click', function (event) {
         const jobDescription = parentNode.querySelector('.jobDescription').innerText
 
 
+        parentNode.querySelector('.statusButton').innerText = 'Rejected'
+
         const statusBtn = parentNode.querySelector('.statusButton');
-        statusBtn.innerText = "Interview";
-        statusBtn.classList.remove("bg-[#eef4ff]");
-        statusBtn.classList.add("bg-green-500", "text-black");
+        statusBtn.innerText = "Rejected";
+        statusBtn.classList.remove(
+            "bg-[#eef4ff]",
+            "bg-green-500",
+            "text-black",
+            "text-white"
+
+        );
+        statusBtn.classList.add("bg-red-500", "text-black")
+
+
 
 
         const cardInfo = {
@@ -139,19 +192,26 @@ mainContainer.addEventListener('click', function (event) {
             location,
             type,
             salary,
-            statusButton: 'Interview',
+            statusButton: 'Rejected',
             jobDescription
         }
 
-        const companyExist = interviewList.find(item => item.companyName == cardInfo.companyName);
+        const companyExist = rejectedList.find(item => item.companyName == cardInfo.companyName);
 
 
         if (!companyExist) {
-            interviewList.push(cardInfo)
+            rejectedList.push(cardInfo)
         }
 
-        calculateCount();
-        renderInterview();
+
+        interviewList = interviewList.filter(item => item.companyName != cardInfo.companyName)
+
+        if (currentStatus == 'interview-filter-button') {
+            renderInterview();
+        }
+
+        calculateCount()
+
 
     }
 })
@@ -161,6 +221,20 @@ mainContainer.addEventListener('click', function (event) {
 function renderInterview() {
 
     filterSection.innerHTML = '';
+
+
+    if (interviewList.length == 0) {
+        filterSection.innerHTML = `
+          <div class="flex flex-col justify-center items-center bg-[#F1F2F4] rounded-lg py-25 mb-20 mt-4">
+            <img src="./images/jobs.png" alt="" class="items-center">
+            <p class="text-2xl text-[#002C5C] font-semibold">No jobs available</p>
+            <p class="text-[#64748B] text-center">Check back soon for new job opportunities</p>
+          </div>
+        `;
+
+    }
+
+
 
     for (let inter of interviewList) {
         console.log(inter);
@@ -188,6 +262,8 @@ function renderInterview() {
 
 
                      <!-- part 3 -->
+
+                <!-- e  -->
                     <button class="statusButton bg-green-500 text-black py-2 px-3 rounded ">${inter.statusButton}</button>
 
                     <p class="jobDescription text-[#323B49] font-normal">${inter.jobDescription}
@@ -203,8 +279,86 @@ function renderInterview() {
 
                 <!-- main part 2 -->
                 <div>
-                    <img src="./images/Vector (1).png" alt=""
-                        class="rounded-full border-2 border-[#F1F2F4]  ring-[#F1F2F4] p-2 w-8 h-8">
+                    <span class="delete rounded-full border-2 border-[#F1F2F4]  ring-[#F1F2F4] p-2 w-8 h-8 cursor-pointer"> <i
+                            class="fa-solid fa-trash"></i></span>
+                </div>
+
+
+        `;
+
+
+        filterSection.appendChild(div)
+    }
+
+
+}
+
+
+
+// Rejected       render Function
+
+function renderRejected() {
+
+    filterSection.innerHTML = '';
+
+
+    if (rejectedList.length === 0) {
+        filterSection.innerHTML = `
+          <div class="flex flex-col justify-center items-center bg-[#F1F2F4] rounded-lg py-25 mb-20 mt-4">
+            <img src="./images/jobs.png" alt="" class="items-center">
+            <p class="text-2xl text-[#002C5C] font-semibold">No jobs available</p>
+            <p class="text-[#64748B] text-center">Check back soon for new job opportunities</p>
+          </div>
+        `;
+
+    }
+
+
+    for (let reje of rejectedList) {
+        // console.log(inter);
+        let div = document.createElement('div');
+        div.className = 'card flex justify-between  shadow-2xl  rounded-lg p-6 mb-5';
+        div.innerHTML = `
+            <div class="space-y-6 ">
+                    <!-- part 1 -->
+                    <div>
+                        <p class="companyName text-lg font-semibold text-[#002C5C]">${reje.companyName}</p>
+                        <p class="jobTitle text-base font-normal text-gray-500">${reje.jobTitle}</p>
+                    </div>
+
+                    
+                    <!-- part 2 -->
+                    <!-- location,type and salary -->
+                    <div class="flex gap-2 text-[14px] text-[#64748B]">
+                        <span class="location">${reje.location}</span>
+                        <ul class="flex gap-2">
+                            <li class="type flex items-center gap-1.5"><i class="fa-solid fa-circle text-[5px]"></i>${reje.type}</li>
+                            <li class="salary flex items-center gap-1.5"><i class="fa-solid fa-circle text-[5px]"></i>${reje.salary} </li>
+                        </ul>
+                    </div>
+
+
+
+                     <!-- part 3 -->
+
+                <!-- e  -->
+                    <button class="statusButton bg-red-500 text-black py-2 px-3 rounded ">${reje.statusButton}</button>
+
+                    <p class="jobDescription text-[#323B49] font-normal">${reje.jobDescription}
+                    </p>
+
+                    <div class="flex gap-5">
+                         <button 
+                            class="interview  border-2 border-green-500 text-green-500 font-semibold px-4 py-2 rounded-lg cursor-pointer   hover:bg-green-500 hover:text-white active:bg-green-600 active:text-white transition-colors duration-300">Interview</button>
+                        <button
+                            class=" rejected  border-2 border-red-500 text-red-500 font-semibold px-4 py-2 rounded-lg cursor-pointer hover:bg-red-500 hover:text-white  active:bg-red-600 active:text-white  transition-colors duration-300 ">Rejected</button>
+                    </div>
+                </div>
+
+                <!-- main part 2 -->
+                <div>
+                    <span class="delete rounded-full border-2 border-[#F1F2F4]  ring-[#F1F2F4] p-2 w-8 h-8 cursor-pointer"> <i
+                            class="fa-solid fa-trash"></i></span>
                 </div>
 
         `
