@@ -6,7 +6,7 @@ let currentStatus = 'all'
 let total = document.getElementById('total');
 let minTotal = document.getElementById('minTotal');
 let iinterview = document.getElementById('iinterview');
-let rrejected =document.getElementById('rrejected');
+let rrejected = document.getElementById('rrejected');
 
 
 const allFilterButton = document.getElementById('all-filter-button');
@@ -25,6 +25,8 @@ function calculateCount() {
     iinterview.innerText = interviewList.length;
     rrejected.innerText = rejectedList.length;
 
+    updateMinTotal();
+
 }
 calculateCount();
 
@@ -32,7 +34,6 @@ calculateCount();
 // -------------------------------------
 
 function toggleStyle(id) {
-    // Added Biue Bg for all
     allFilterButton.classList.remove('bg-[#3B82F6]', 'text-white')
     interviewFilterButton.classList.remove('bg-[#3B82F6]', 'text-white')
     rejectedFilterButton.classList.remove('bg-[#3B82F6]', 'text-white')
@@ -54,6 +55,8 @@ function toggleStyle(id) {
         allcardSection.classList.add('hidden')
         filterSection.classList.remove('hidden')
 
+
+        // Length == 0 Than Show No Items Box
         if (interviewList.length == 0) {
             filterSection.innerHTML = `
 
@@ -63,62 +66,73 @@ function toggleStyle(id) {
             <p class="text-[#64748B] text-center">Check back soon for new job opportunities</p>
          </div>
             `;
-        } else {
-            renderInterview();
         }
 
+        renderInterview()
 
+       
+
+        // Button Color Change When toggle click
 
     } else if (id == 'all-filter-button') {
         allcardSection.classList.remove('hidden');
         filterSection.classList.add('hidden')
+
+
     } else if (id == 'rejected-filter-button') {
-        allcardSection.classList.add('hidden');    // add
-        filterSection.classList.remove('hidden');    //remove
+        allcardSection.classList.add('hidden');
+        filterSection.classList.remove('hidden');
+
         renderRejected()
-
-
-        if (rejectedList.length == 0) {
-            filterSection.innerHTML = `
-
-          <div class=" flex  flex-col justify-center items-center bg-[#F1F2F4] rounded-lg py-25 mb-20 mt-4">
-            <img src="./images/jobs.png" alt="" class="items-center">
-            <p class="text-2xl text-[#002C5C] font-semibold">No jobs available</p>
-            <p class="text-[#64748B] text-center">Check back soon for new job opportunities</p>
-         </div>
-            `;
-        } else {
-            renderRejected();
-        }
+       
     }
+
+    updateMinTotal();
 }
 
 
 
-mainContainer.addEventListener('click', function (event) {
-    // console.log(event.target.parentNode.parentNode);
+// Main Container
 
+mainContainer.addEventListener('click', function (event) {
+
+    if (event.target.classList.contains('delete')) {
+        const div = event.target.parentNode.parentNode;
+        div.remove();
+
+        calculateCount();
+
+
+        if (currentStatus == 'interview-filter-button') {
+            renderInterview();
+        } else if (currentStatus == 'rejected-filter-button') {
+            renderRejected();
+        }
+        renderAllEmpty();
+
+    }
+
+
+
+    // interview
     if (event.target.classList.contains('interview')) {
         const parentNode = event.target.parentNode.parentNode.parentNode;
-        // const parentNode = event.target.closest('card');
+
         const companyName = parentNode.querySelector('.companyName').innerText
         const jobTitle = parentNode.querySelector('.jobTitle').innerText
-        // const jobInfo = parentNode.querySelector('.jobInfo').innerText
         const location = parentNode.querySelector('.location').innerText
         const type = parentNode.querySelector('.type').innerText
         const salary = parentNode.querySelector('.salary').innerText
         const statusButton = parentNode.querySelector('.statusButton').innerText
         const jobDescription = parentNode.querySelector('.jobDescription').innerText
-
-
         const statusBtn = parentNode.querySelector('.statusButton');
+
         statusBtn.innerText = "Interview";
         statusBtn.classList.remove(
             "bg-[#eef4ff]", "bg-red-500", "text-white", "text-black",
 
         );
 
-        // problem
         statusBtn.classList.add("bg-green-500", "text-black");
 
 
@@ -141,28 +155,25 @@ mainContainer.addEventListener('click', function (event) {
 
         rejectedList = rejectedList.filter(item => item.companyName != cardInfo.companyName)
 
-        // if (currentStatus == 'rejected-filter-button') {
-        //     renderRejected();
-        // }
 
-        if(currentStatus == 'interview-filter-button'){
+
+        if (currentStatus == 'interview-filter-button') {
             renderInterview();
-        }else if(currentStatus == 'rejected-filter-button'){
+        } else if (currentStatus == 'rejected-filter-button') {
             renderRejected();
         }
 
 
         calculateCount();
-        // renderInterview();
 
-        // problem
+
+        // Rejected
     } else if (event.target.classList.contains('rejected')) {
         const parentNode = event.target.parentNode.parentNode.parentNode;
         // const parentNode =event.target.closest('.card');
-   
+
         const companyName = parentNode.querySelector('.companyName').innerText
         const jobTitle = parentNode.querySelector('.jobTitle').innerText
-        // const jobInfo = parentNode.querySelector('.jobInfo').innerText
         const location = parentNode.querySelector('.location').innerText
         const type = parentNode.querySelector('.type').innerText
         const salary = parentNode.querySelector('.salary').innerText
@@ -175,16 +186,10 @@ mainContainer.addEventListener('click', function (event) {
         const statusBtn = parentNode.querySelector('.statusButton');
         statusBtn.innerText = "Rejected";
         statusBtn.classList.remove(
-            "bg-[#eef4ff]",
-            "bg-green-500",
-            "text-black",
-            "text-white"
+            "bg-[#eef4ff]", "bg-green-500", "text-black", "text-white"
 
         );
         statusBtn.classList.add("bg-red-500", "text-black")
-
-
-
 
         const cardInfo = {
             companyName,
@@ -198,11 +203,9 @@ mainContainer.addEventListener('click', function (event) {
 
         const companyExist = rejectedList.find(item => item.companyName == cardInfo.companyName);
 
-
         if (!companyExist) {
             rejectedList.push(cardInfo)
         }
-
 
         interviewList = interviewList.filter(item => item.companyName != cardInfo.companyName)
 
@@ -211,17 +214,41 @@ mainContainer.addEventListener('click', function (event) {
         }
 
         calculateCount()
-
-
     }
 })
+
+
+// update side Count jobs
+function updateMinTotal() {
+    if (currentStatus == 'all-filter-button') {
+        minTotal.innerText = `${allcardSection.children.length} `;
+    } else if (currentStatus == 'interview-filter-button') {
+        minTotal.innerText = `${interviewList.length} of ${allcardSection.children.length} `;
+    } else if (currentStatus == 'rejected-filter-button') {
+        minTotal.innerText = `${rejectedList.length} of ${allcardSection.children.length} `;
+    }
+}
+
+
+
+// Empty allCard Section delete
+function renderAllEmpty() {
+    if (allcardSection.children.length == 0) {
+        allcardSection.innerHTML = `
+         <div class="flex flex-col justify-center items-center bg-[#F1F2F4] rounded-lg py-25 mb-20 mt-4">
+            <img src="./images/jobs.png" alt="" class="items-center">
+            <p class="text-2xl text-[#002C5C] font-semibold">No jobs available</p>
+            <p class="text-[#64748B] text-center">Check back soon for new job opportunities</p>
+          </div>
+        `
+    }
+}
 
 
 
 function renderInterview() {
 
     filterSection.innerHTML = '';
-
 
     if (interviewList.length == 0) {
         filterSection.innerHTML = `
@@ -231,13 +258,12 @@ function renderInterview() {
             <p class="text-[#64748B] text-center">Check back soon for new job opportunities</p>
           </div>
         `;
-
     }
 
 
 
     for (let inter of interviewList) {
-        console.log(inter);
+        // console.log(inter);
         let div = document.createElement('div');
         div.className = 'card flex justify-between  shadow-2xl  rounded-lg p-6 mb-5';
         div.innerHTML = `
@@ -279,23 +305,19 @@ function renderInterview() {
 
                 <!-- main part 2 -->
                 <div>
-                    <span class="delete rounded-full border-2 border-[#F1F2F4]  ring-[#F1F2F4] p-2 w-8 h-8 cursor-pointer"> <i
-                            class="fa-solid fa-trash"></i></span>
+                    <img src="./images/delete.png" alt=""
+                        class="delete rounded-full border-2 border-[#F1F2F4]  ring-[#F1F2F4] p-2 w-10 h-10 cursor-pointer">
                 </div>
-
-
         `;
-
 
         filterSection.appendChild(div)
     }
-
 
 }
 
 
 
-// Rejected       render Function
+// Rejected  render Function
 
 function renderRejected() {
 
@@ -356,15 +378,12 @@ function renderRejected() {
                 </div>
 
                 <!-- main part 2 -->
-                <div>
-                    <span class="delete rounded-full border-2 border-[#F1F2F4]  ring-[#F1F2F4] p-2 w-8 h-8 cursor-pointer"> <i
-                            class="fa-solid fa-trash"></i></span>
+               <div>
+                    <img src="./images/delete.png" alt=""
+                        class="delete rounded-full border-2 border-[#F1F2F4]  ring-[#F1F2F4] p-2 w-10 h-10 cursor-pointer">
                 </div>
 
         `
         filterSection.appendChild(div)
     }
-
-
-
 }
